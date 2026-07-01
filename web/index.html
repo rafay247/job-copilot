@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job Copilot</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">◆</div>
+        <div class="brand-text">
+          <strong>Job Copilot</strong>
+          <span>your search, one place</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="scout">
+          <span class="ic">🔍</span> Scout
+        </button>
+        <button class="nav-item" data-view="tracker">
+          <span class="ic">🗂️</span> Tracker
+        </button>
+        <button class="nav-item" data-view="tailor">
+          <span class="ic">✍️</span> Resume Tailor
+        </button>
+        <button class="nav-item" data-view="coach">
+          <span class="ic">🎤</span> Interview Coach
+        </button>
+        <button class="nav-item" data-view="settings">
+          <span class="ic">⚙️</span> Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <button id="theme-toggle" class="theme-toggle" title="Toggle light / dark">
+          <span class="theme-ic">🌙</span> <span class="theme-label">Dark</span>
+        </button>
+        <div id="status-dot" class="status-pill">
+          <span class="dot"></span> <span id="status-text">Ready</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- SCOUT -->
+      <section class="view active" id="view-scout">
+        <header class="view-head">
+          <div>
+            <h1>Scout</h1>
+            <p class="sub">AI-scored remote jobs, ranked against your profile.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-refresh">
+            <span class="spin-slot"></span> Find new jobs
+          </button>
+        </header>
+
+        <div class="toolbar">
+          <input type="search" id="scout-search" class="input" placeholder="Filter title, company, keyword…" />
+          <label class="range-label">
+            Min score <b id="score-val">0</b>
+            <input type="range" id="scout-min" min="0" max="100" value="0" step="5" />
+          </label>
+        </div>
+
+        <div class="stats" id="scout-stats"></div>
+        <div class="grid" id="scout-grid"></div>
+        <div class="empty" id="scout-empty">
+          <p>No jobs yet. Add your API keys in <b>Settings</b>, then hit <b>Find new jobs</b>.</p>
+        </div>
+      </section>
+
+      <!-- TRACKER -->
+      <section class="view" id="view-tracker">
+        <header class="view-head">
+          <div>
+            <h1>Tracker</h1>
+            <p class="sub">Move a job across your pipeline. Saved → Applied → Interview → Offer.</p>
+          </div>
+        </header>
+        <div class="board" id="tracker-board"></div>
+      </section>
+
+      <!-- TAILOR -->
+      <section class="view" id="view-tailor">
+        <header class="view-head">
+          <div>
+            <h1>Resume Tailor</h1>
+            <p class="sub">Paste a job description — get a tailored resume + cover letter.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-tailor">
+            <span class="spin-slot"></span> Tailor for this job
+          </button>
+        </header>
+        <div class="split">
+          <div class="pane">
+            <label class="field-label">Job description</label>
+            <textarea id="tailor-jd" class="input area" placeholder="Paste the full job posting here…"></textarea>
+          </div>
+          <div class="pane">
+            <div id="tailor-out" class="output-card">
+              <div class="placeholder">Your tailored resume and cover letter will appear here.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COACH -->
+      <section class="view" id="view-coach">
+        <header class="view-head">
+          <div>
+            <h1>Interview Coach</h1>
+            <p class="sub">Likely questions with model answers built from your background.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-coach">
+            <span class="spin-slot"></span> Generate questions
+          </button>
+        </header>
+        <div class="coach-form">
+          <input id="coach-role" class="input" placeholder="Target role (e.g. Senior Backend Engineer)" />
+          <input id="coach-company" class="input" placeholder="Company (optional)" />
+        </div>
+        <textarea id="coach-jd" class="input area small" placeholder="Paste the job description for sharper questions (optional)…"></textarea>
+        <div id="coach-out" class="qa-list"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <header class="view-head">
+          <div>
+            <h1>Settings</h1>
+            <p class="sub">Everything stays local in <code>copilot.db</code> — nothing is sent anywhere but the APIs you choose.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-save-settings">Save</button>
+        </header>
+
+        <div class="settings-grid">
+          <div class="card">
+            <h3>🔑 API keys</h3>
+            <label class="field-label">AI API key <span class="hint">— paste any Gemini, OpenAI, Anthropic or DeepSeek key</span></label>
+            <input id="set-aikey" class="input" type="password" placeholder="••••••••" />
+            <div id="provider-badge" class="provider-badge"></div>
+            <label class="field-label">Provider</label>
+            <select id="set-provider" class="input">
+              <option value="auto">Auto-detect (from key)</option>
+              <option value="gemini">Google Gemini</option>
+              <option value="openai">OpenAI</option>
+              <option value="anthropic">Anthropic Claude</option>
+              <option value="deepseek">DeepSeek</option>
+            </select>
+            <label class="field-label">JSearch API key (RapidAPI — free)</label>
+            <input id="set-jsearch" class="input" type="password" placeholder="••••••••" />
+          </div>
+
+          <div class="card">
+            <h3>🎯 Search</h3>
+            <label class="field-label">Search queries (one per line)</label>
+            <textarea id="set-queries" class="input area small" placeholder="software engineer remote&#10;backend developer node.js remote"></textarea>
+          </div>
+
+          <div class="card wide">
+            <h3>📄 Your profile</h3>
+            <p class="hint">Upload your resume PDF or paste your profile. This powers scoring, tailoring, and interview answers.</p>
+            <div class="upload-row">
+              <label class="btn btn-ghost">
+                Upload resume PDF <input type="file" id="set-resume" accept="application/pdf" hidden />
+              </label>
+              <span id="resume-status" class="hint"></span>
+            </div>
+            <textarea id="set-profile" class="input area" placeholder="Your profile / resume text…"></textarea>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/assets/app.js"></script>
+</body>
+</html>
